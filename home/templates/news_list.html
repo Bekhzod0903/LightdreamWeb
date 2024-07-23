@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News</title>
+    <style>
+        /* Add your CSS styling here */
+        a {
+            text-decoration: none;
+            color: #007bff;
+        }
+        a:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <h1>News</h1>
+
+    {% if request.user.is_staff %}
+        <a href="{% url 'add_news' %}">Add News</a>
+    {% endif %}
+
+    <ul>
+        {% for news_item in news_items %}
+            <li>
+                <h2>{{ news_item.title }}</h2>
+                {% if news_item.image %}
+                    <img src="{{ news_item.image.url }}" alt="{{ news_item.title }}">
+                {% endif %}
+                {% if news_item.video %}
+                    <video controls>
+                        <source src="{{ news_item.video.url }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                {% endif %}
+                <p>{{ news_item.text }}</p>
+            </li>
+        {% empty %}
+            <li>No news items available.</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'home' %}">Back to Home</a>
+
+</body>
+</html>
