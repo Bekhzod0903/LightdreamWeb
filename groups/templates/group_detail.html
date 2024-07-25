@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ group.name }}</title>
+    <style>
+        /* Add some basic styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f4;
+            color: #333;
+        }
+
+        h1, h2 {
+            color: #007bff;
+        }
+
+        .group-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .group-container img,
+        .group-container video,
+        .group-container audio {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .delete-button {
+            background: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .delete-button:hover {
+            background: #c82333;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #007bff;
+            padding: 10px 20px;
+            border-radius: 4px;
+            background: #e9ecef;
+        }
+
+        .back-link:hover {
+            background: #007bff;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="group-container">
+        <h1>{{ group.name }}</h1>
+        <p>{{ group.description }}</p>
+
+        <h2>Messages</h2>
+        <ul>
+            {% for message in messages %}
+                <li>
+                    <strong>{{ message.sender }}:</strong> {{ message.text }}
+                    {% if message.image %}
+                        <img src="{{ message.image.url }}" alt="Image">
+                    {% endif %}
+                    {% if message.video %}
+                        <video controls>
+                            <source src="{{ message.video.url }}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    {% endif %}
+                    {% if message.audio %}
+                        <audio controls>
+                            <source src="{{ message.audio.url }}" type="audio/mp3">
+                            Your browser does not support the audio tag.
+                        </audio>
+                    {% endif %}
+                </li>
+            {% empty %}
+                <li>No messages in this group.</li>
+            {% endfor %}
+        </ul>
+
+        <h2>Send a Message</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Send</button>
+        </form>
+        <a href="{% url 'groups_list' %}" class="back-link">Back to Groups</a>
+    </div>
+</body>
+</html>

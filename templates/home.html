@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Lightdream</title>
     <style>
+        /* Existing styles */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -184,9 +185,12 @@
             <a href="{% url 'users:logout' %}">Logout</a>
             <a href="{% url 'category_list' %}">Musics</a>
             <a href="{% url 'news_list' %}">News</a>
+            <a href="{% url 'groups_list' %}">Groups</a>
+
             {% if request.user.is_staff %}
                 <a href="{% url 'add_news' %}">Add News</a>
                 <a href="{% url 'create_music' %}">Add Music</a>
+                <a href="{% url 'create_group' %}">Create Group</a>
             {% endif %}
         {% else %}
             <a href="{% url 'users:register' %}">Register</a>
