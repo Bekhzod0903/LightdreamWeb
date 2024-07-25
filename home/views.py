@@ -68,4 +68,4 @@ def delete_news(request, news_id):
     if request.method == 'POST':
         news_item.delete()
         return redirect('news_list')
-    return render(request, 'confirm_delete.html', {'news_item': news_item})
+    return render(request, 'confirm_delete_message.html', {'news_item': news_item})

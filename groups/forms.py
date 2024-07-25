@@ -16,3 +16,8 @@ class GroupForm(forms.ModelForm):
     class Meta:
         model = Group
         fields = ['name', 'description']
+
+class EditGroupMessageForm(GroupMessageForm):
+    class Meta:
+        model = GroupMessage
+        fields = ['text', 'image', 'video', 'audio']

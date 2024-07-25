@@ -2,108 +2,145 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ group.name }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ group.name }} - Group Chat</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Add some basic styles */
+        /* Custom styles to resemble Telegram */
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        .message-list {
+            max-height: 500px;
+            overflow-y: auto;
+            margin-top: 20px;
+            padding: 10px;
+            border-top: 1px solid #e0e0e0;
+        }
+        .message-item {
+            padding: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .message-item:last-child {
+            border-bottom: none;
+        }
+        .message-item img,
+        .message-item video,
+        .message-item audio {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+        .form-group label {
+            font-weight: 600;
+        }
+        .form-control-file {
             padding: 0;
-            background: #f4f4f4;
+        }
+        .btn-primary {
+            background-color: #0088cc;
+            border-color: #0088cc;
+        }
+        .btn-primary:hover {
+            background-color: #007ab8;
+            border-color: #007ab8;
+        }
+        .btn-warning {
+            background-color: #ffc107;
+            border-color: #ffc107;
+        }
+        .btn-warning:hover {
+            background-color: #e0a800;
+            border-color: #d39e00;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+        .message-item strong {
             color: #333;
         }
-
-        h1, h2 {
-            color: #007bff;
-        }
-
-        .group-container {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .group-container img,
-        .group-container video,
-        .group-container audio {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
+        .message-item .mt-2 {
             margin-top: 10px;
-        }
-
-        .delete-button {
-            background: #dc3545;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-            margin-top: 20px;
-        }
-
-        .delete-button:hover {
-            background: #c82333;
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-top: 20px;
-            text-decoration: none;
-            color: #007bff;
-            padding: 10px 20px;
-            border-radius: 4px;
-            background: #e9ecef;
-        }
-
-        .back-link:hover {
-            background: #007bff;
-            color: #fff;
         }
     </style>
 </head>
 <body>
-    <div class="group-container">
-        <h1>{{ group.name }}</h1>
-        <p>{{ group.description }}</p>
+    <div class="container mt-4">
+        <h1 class="mb-4">{{ group.name }} - Messages</h1>
 
-        <h2>Messages</h2>
-        <ul>
-            {% for message in messages %}
-                <li>
-                    <strong>{{ message.sender }}:</strong> {{ message.text }}
-                    {% if message.image %}
-                        <img src="{{ message.image.url }}" alt="Image">
-                    {% endif %}
-                    {% if message.video %}
-                        <video controls>
-                            <source src="{{ message.video.url }}" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    {% endif %}
-                    {% if message.audio %}
-                        <audio controls>
-                            <source src="{{ message.audio.url }}" type="audio/mp3">
-                            Your browser does not support the audio tag.
-                        </audio>
-                    {% endif %}
-                </li>
-            {% empty %}
-                <li>No messages in this group.</li>
-            {% endfor %}
-        </ul>
-
-        <h2>Send a Message</h2>
-        <form method="post" enctype="multipart/form-data">
+        <!-- New Message Form -->
+        <form method="post" enctype="multipart/form-data" action="{% url 'group_detail' group_id=group.id %}">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Send</button>
+            <div class="form-group">
+                <label for="text">Message:</label>
+                <textarea id="text" name="text" class="form-control" rows="3" placeholder="Type your message here..." required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="image">Image:</label>
+                <input type="file" id="image" name="image" class="form-control-file" accept="image/png, image/jpeg">
+            </div>
+
+            <div class="form-group">
+                <label for="video">Video:</label>
+                <input type="file" id="video" name="video" class="form-control-file" accept="video/mp4">
+            </div>
+
+            <div class="form-group">
+                <label for="audio">Audio:</label>
+                <input type="file" id="audio" name="audio" class="form-control-file" accept="audio/mp3, audio/mpeg">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Send</button>
         </form>
-        <a href="{% url 'groups_list' %}" class="back-link">Back to Groups</a>
+
+        <!-- Messages List -->
+        <div class="message-list mt-4">
+            <ul class="list-unstyled">
+                {% for message in messages %}
+                    <li class="message-item">
+                        <strong>{{ message.sender.username }}:</strong> {{ message.text }}
+                        {% if message.image %}
+                            <img src="{{ message.image.url }}" alt="Image" class="mt-2">
+                        {% endif %}
+                        {% if message.video %}
+                            <video controls class="mt-2">
+                                <source src="{{ message.video.url }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        {% endif %}
+                        {% if message.audio %}
+                            <audio controls class="mt-2">
+                                <source src="{{ message.audio.url }}" type="audio/mp3">
+                                Your browser does not support the audio tag.
+                            </audio>
+                        {% endif %}
+                        {% if message.sender == user %}
+                            <a href="{% url 'edit_message' group_id=group.id message_id=message.id %}" class="btn btn-warning btn-sm mt-2">Edit</a>
+                            <a href="{% url 'delete_message' group_id=group.id message_id=message.id %}" class="btn btn-danger btn-sm mt-2">Delete</a>
+                        {% endif %}
+                    </li>
+                {% empty %}
+                    <li>No messages in this group.</li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
