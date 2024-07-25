@@ -44,17 +44,17 @@ def group_detail(request, group_id):
     return render(request, 'group_detail.html', {'group': group, 'messages': messages, 'form': form})
 
 
-from django.contrib.auth.decorators import login_required, user_passes_test
-from .forms import GroupForm
+# groups/views.py
+from django.shortcuts import render, redirect
+from .models import Group
+from .forms import GroupForm  # Faraz qilaylik, sizda GroupForm mavjud
 
-@user_passes_test(lambda u: u.is_staff)
-@login_required
 def create_group(request):
     if request.method == 'POST':
         form = GroupForm(request.POST)
         if form.is_valid():
             group = form.save()
-            return redirect('group_detail', pk=group.pk)
+            return redirect('group_detail', group_id=group.id)
     else:
         form = GroupForm()
     return render(request, 'create_group.html', {'form': form})
