@@ -55,3 +55,17 @@ def add_news(request):
     else:
         form = NewsForm()
     return render(request, 'add_news.html', {'form': form})
+from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth.decorators import user_passes_test
+from .models import News
+
+def staff_required(function):
+    return user_passes_test(lambda u: u.is_staff)(function)
+
+@staff_required
+def delete_news(request, news_id):
+    news_item = get_object_or_404(News, id=news_id)
+    if request.method == 'POST':
+        news_item.delete()
+        return redirect('news_list')
+    return render(request, 'confirm_delete.html', {'news_item': news_item})

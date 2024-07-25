@@ -41,13 +41,25 @@
             background-color: #007bff;
             color: #fff;
         }
+
+        .audio-player {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
     <h1>{{ category.name }} Music</h1>
     <ul>
         {% for music in musics %}
-            <li>{{ music.title }} by {{ music.artist }} - <a href="{{ music.music.url }}">Download</a></li>
+            <li>
+                {{ music.title }} by {{ music.artist }}
+                <div class="audio-player">
+                    <audio controls>
+                        <source src="{{ music.music.url }}" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+            </li>
         {% empty %}
             <li>No music available for this category.</li>
         {% endfor %}

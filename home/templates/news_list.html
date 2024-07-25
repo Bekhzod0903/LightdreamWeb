@@ -37,6 +37,12 @@
                     </video>
                 {% endif %}
                 <p>{{ news_item.text }}</p>
+                {% if request.user.is_staff %}
+                    <form action="{% url 'delete_news' news_item.id %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" style="color: red; background: none; border: none; cursor: pointer;">Delete</button>
+                    </form>
+                {% endif %}
             </li>
         {% empty %}
             <li>No news items available.</li>
